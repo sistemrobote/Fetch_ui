@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { LoginResponse, ApiError } from "../models/api";
 
 const baseApiUrl = "https://frontend-take-home-service.fetch.com";
 
@@ -12,15 +11,15 @@ const apiClient = axios.create({
 });
 
 export const apiLoginService = {
-  login: async (name: string, email: string): Promise<LoginResponse> => {
+  login: async (email: string, name: string): Promise<string> => {
     try {
-      const response: AxiosResponse<LoginResponse> = await apiClient.post(
+      const response: AxiosResponse<string> = await apiClient.post(
         "/auth/login",
-        { name, email }
+        { email, name }
       );
       return response.data;
     } catch (error) {
-      const axiosError = error as AxiosError<ApiError>;
+      const axiosError = error as AxiosError;
       console.error(
         "Login failed:",
         axiosError.response?.data || axiosError.message

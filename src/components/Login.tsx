@@ -3,35 +3,39 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { LoginInputs } from "../models/user";
 import { apiLoginService } from "../api/userService";
 import { useState } from "react";
-import { ApiError } from "../models/api";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export const LoginForm = () => {
+export const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<LoginInputs>();
+  const { setIsAuthorized } = useAuth();
   const [unathorizedError, setUnathorizedError] = useState("");
-  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
     try {
-      await apiLoginService.login("John Doe", "john@example.com");
-      console.log("Login successful!");
-    } catch (error) {
-      if (error && typeof error === "object" && "errorCode" in error) {
-        if (error.errorCode === "401") {
-          setUnathorizedError("Unauthorized: Incorrect credentials.");
-        } else {
-          const err = error as ApiError;
-          console.error(`Error logging in: ${err.message}`);
+      apiLoginService.login(data.email, data.password).then((response) => {
+        if (response === "OK") {
+          setIsAuthorized(true);
+          navigate("/dashboard");
         }
+      });
+    } catch (error) {
+      if (
+        error &&
+        typeof error === "object" &&
+        "errorCode" in error &&
+        error.errorCode === "401"
+      ) {
+        setUnathorizedError("Unauthorized: Incorrect credentials.");
       } else {
         console.error("An unexpected error occurred:", error);
       }
     }
   };
-  console.log(watch("email"));
 
   return (
     <Box

@@ -1,11 +1,11 @@
 import "./App.css";
-import { LoginForm } from "./components/LoginForm";
-import { AuthProvider } from "./context/IsAuthContext";
+import { AuthProvider } from "./context/AuthContext";
+import { AppRouter } from "./routing/AppRouter";
 
 function App() {
   return (
     <AuthProvider>
-      <LoginForm />
+      <AppRouter />
     </AuthProvider>
   );
 }
