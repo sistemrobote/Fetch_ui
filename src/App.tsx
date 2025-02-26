@@ -1,12 +1,12 @@
-import './App.css'
+import "./App.css";
+import { LoginForm } from "./components/LoginForm";
 
 function App() {
-
   return (
     <>
-      My FETCH app
+      <LoginForm />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
