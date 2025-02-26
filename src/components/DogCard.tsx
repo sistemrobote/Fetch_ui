@@ -5,20 +5,31 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  IconButton,
 } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { Dog } from "../models/dogs";
+import { useCallback } from "react";
 
 type Props = {
   dog: Dog;
+  setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
+  isFavorit?: boolean;
 };
 
-export const DogCard = ({ dog }: Props) => {
+export const DogCard = ({ dog, setFavorites, isFavorit }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const handleClick = useCallback(
+    () => setFavorites((prev) => [...prev, dog.id]),
+    [dog.id, setFavorites]
+  );
   return (
     <Card
       sx={{
         display: "flex",
+        justifyContent: "space-between",
         marginTop: 2,
         flexDirection: isMobile ? "column" : "row",
         width: 600,
@@ -55,6 +66,20 @@ export const DogCard = ({ dog }: Props) => {
         <Typography variant="body2">Age: {dog.age}</Typography>
         <Typography variant="body2">Location: {dog.zip_code}</Typography>
       </CardContent>
+      <IconButton
+        aria-label="fingerprint"
+        color="secondary"
+        disableRipple
+        sx={{
+          paddingRight: 5,
+          "&.MuiButtonBase-root:hover": {
+            bgcolor: "transparent",
+          },
+        }}
+        onClick={handleClick}
+      >
+        {isFavorit ? <FavoriteIcon /> : <FavoriteBorderOutlinedIcon />}
+      </IconButton>
     </Card>
   );
 };

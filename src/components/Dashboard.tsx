@@ -12,20 +12,24 @@ import { dogsService } from "../api/dogsService";
 import { ResultsComponent } from "./ResultsComponent";
 import { InputData, SearchResponse } from "../models/dogs";
 import { transformData } from "./utils";
+import { withAuth } from "../routing/ProtectedWrapper";
 
-export const Dashboard: React.FC = () => {
-  const { control, handleSubmit } = useForm<InputData>({
+export const Dashboard: React.FC = withAuth(() => {
+  const { control, handleSubmit, watch } = useForm<InputData>({
     defaultValues: {
       breeds: [],
       zipCodes: "",
       ageMin: "0",
       ageMax: "20",
+      size: "4", // change to 25
+      from: "0",
     },
   });
 
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [breeds, setBreeds] = useState<string[]>([]);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     const fetchBreeds = async () => {
@@ -46,6 +50,8 @@ export const Dashboard: React.FC = () => {
     try {
       const response = await dogsService.searchDogs({
         ...parsedData,
+        size: data.size,
+        from: data.from,
       });
       setResults(response);
     } catch (error) {
@@ -54,6 +60,7 @@ export const Dashboard: React.FC = () => {
       setLoading(false);
     }
   };
+  const selectedSize = watch("size");
 
   return (
     <Box
@@ -133,6 +140,18 @@ export const Dashboard: React.FC = () => {
             />
           )}
         />
+        <Controller
+          name="size"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Results per Page"
+              type="number"
+              sx={{ mb: 2, maxWidth: "120px" }}
+            />
+          )}
+        />
 
         <Button
           type="submit"
@@ -147,7 +166,14 @@ export const Dashboard: React.FC = () => {
           Search Dogs
         </Button>
       </form>
-      <ResultsComponent ids={results?.resultIds ?? []} loadingData={loading} />
+      <ResultsComponent
+        ids={results?.resultIds ?? []}
+        loadingData={loading}
+        page={page}
+        setPage={setPage}
+        totalResults={results?.total ?? 0}
+        size={parseInt(selectedSize || "25")}
+      />
     </Box>
   );
-};
+});

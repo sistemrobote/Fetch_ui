@@ -30,10 +30,17 @@ export interface SearchParams {
   zipCodes?: string[];
   ageMin?: string;
   ageMax?: string;
+  size?: string;
+  from?: string;
 }
 export interface InputData {
   breeds?: string[];
   zipCodes?: string;
   ageMin?: string;
   ageMax?: string;
+  size?: string;
+  from?: string;
+}
+export interface Match {
+  match: string;
 }

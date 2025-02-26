@@ -7,6 +7,8 @@ interface SearchParams {
   zipCodes?: string[];
   ageMin?: string;
   ageMax?: string;
+  size?: string;
+  from?: string;
 }
 
 interface SearchResponse {
