@@ -17,8 +17,6 @@ type Props = {
 export const ResultsComponent = (props: Props) => {
   const { loadingData, ids, page, setPage, totalResults, size } = props;
   const [dogs, setDogs] = useState<Dog[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [matchedDogId, setMatchedDogId] = useState<string | null>(null);
   const { results, setResults } = useDogsStore();
 
   useEffect(() => {
@@ -31,21 +29,6 @@ export const ResultsComponent = (props: Props) => {
         .catch((error) => console.error("Error fetching Gogs by Ids", error));
   }, [loadingData, ids]);
 
-  const generateMatch = async () => {
-    if (favorites.length === 0) {
-      alert("You must favorite at least one dog before matching!");
-      return;
-    }
-
-    try {
-      const matchId = await dogsService.matchDog(favorites);
-      setMatchedDogId(matchId);
-    } catch (error) {
-      console.error("Error generating match", error);
-    }
-  };
-
-  const isFavorite = (id: string) => favorites.includes(id);
   const handleNextClick = async () => {
     setPage(page + 1);
     try {
@@ -87,24 +70,8 @@ export const ResultsComponent = (props: Props) => {
         </Button>
       </Box>
       {dogs.map((dog) => (
-        <DogCard
-          key={dog.id}
-          dog={dog}
-          isFavorit={isFavorite(dog.id)}
-          setFavorites={setFavorites}
-        />
+        <DogCard key={dog.id} dog={dog} />
       ))}
-      {!!favorites.length && (
-        <Button
-          variant="outlined"
-          onClick={generateMatch}
-          sx={{
-            marginTop: 3,
-          }}
-        >
-          Match
-        </Button>
-      )}
     </>
   );
 };

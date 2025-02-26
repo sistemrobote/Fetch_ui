@@ -23,7 +23,7 @@ export const Dashboard: React.FC = withAuth(() => {
       zipCodes: "",
       ageMin: "0",
       ageMax: "20",
-      size: "4", // change to 25
+      size: "25",
       from: "0",
     },
   });

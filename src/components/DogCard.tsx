@@ -10,21 +10,33 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { Dog } from "../models/dogs";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 type Props = {
   dog: Dog;
-  setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
-  isFavorit?: boolean;
 };
 
-export const DogCard = ({ dog, setFavorites, isFavorit }: Props) => {
+export const DogCard = ({ dog }: Props) => {
   const theme = useTheme();
+  const [favorites, setFavorites] = useState(() => {
+    const storedFavorites = localStorage.getItem("favorites");
+    return storedFavorites ? JSON.parse(storedFavorites) : [];
+  });
+  const isFavorit = favorites.includes(dog.id);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const handleClick = useCallback(
-    () => setFavorites((prev) => [...prev, dog.id]),
-    [dog.id, setFavorites]
-  );
+  const handleClick = useCallback(() => {
+    setFavorites((prevFavorites: string[]) => {
+      let updatedFavorites;
+      if (prevFavorites.includes(dog.id)) {
+        updatedFavorites = prevFavorites.filter((id) => id !== dog.id); // Remove from favorites
+      } else {
+        updatedFavorites = [...prevFavorites, dog.id]; // Add to favorites
+      }
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites)); // Store in localStorage
+      return updatedFavorites;
+    });
+  }, [dog.id]);
+
   return (
     <Card
       sx={{
