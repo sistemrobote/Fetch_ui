@@ -9,6 +9,7 @@ import { useAuth } from "../state/AuthContext";
 import { Login } from "../components/Login";
 import { Dashboard } from "../components/Dashboard";
 import { Logout } from "../components/LogOut";
+import { MyFavorites } from "../components/MyFavorites";
 
 function ProtectedRoute() {
   const { isAuthorized } = useAuth();
@@ -24,6 +25,7 @@ export const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/myfavorites" element={<MyFavorites />} />
         </Route>
         <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<Navigate to="/" />} />

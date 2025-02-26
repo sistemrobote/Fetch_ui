@@ -2,7 +2,7 @@ import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { LoginInputs } from "../models/user";
 import { apiLoginService } from "../api/userService";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../state/AuthContext";
 
@@ -15,27 +15,30 @@ export const Login = () => {
   const { setIsAuthorized } = useAuth();
   const [unathorizedError, setUnathorizedError] = useState("");
   const navigate = useNavigate();
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
-    try {
-      apiLoginService.login(data.email, data.password).then((response) => {
-        if (response === "OK") {
-          setIsAuthorized(true);
-          navigate("/dashboard");
+  const onSubmit: SubmitHandler<LoginInputs> = useCallback(
+    (data) => {
+      try {
+        apiLoginService.login(data.email, data.password).then((response) => {
+          if (response === "OK") {
+            setIsAuthorized(true);
+            navigate("/dashboard");
+          }
+        });
+      } catch (error) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "errorCode" in error &&
+          error.errorCode === "401"
+        ) {
+          setUnathorizedError("Unauthorized: Incorrect credentials.");
+        } else {
+          console.error("An unexpected error occurred:", error);
         }
-      });
-    } catch (error) {
-      if (
-        error &&
-        typeof error === "object" &&
-        "errorCode" in error &&
-        error.errorCode === "401"
-      ) {
-        setUnathorizedError("Unauthorized: Incorrect credentials.");
-      } else {
-        console.error("An unexpected error occurred:", error);
       }
-    }
-  };
+    },
+    [navigate, setIsAuthorized]
+  );
 
   return (
     <Box

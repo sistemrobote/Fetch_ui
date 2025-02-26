@@ -44,7 +44,6 @@ export const DogCard = ({ dog }: Props) => {
         justifyContent: "space-between",
         marginTop: 2,
         flexDirection: isMobile ? "column" : "row",
-        width: 600,
         borderRadius: 2,
         boxShadow: 3,
       }}

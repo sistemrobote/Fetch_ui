@@ -13,7 +13,7 @@ import { ResultsComponent } from "./ResultsComponent";
 import { InputData } from "../models/dogs";
 import { transformData } from "./utils";
 import { withAuth } from "../routing/ProtectedWrapper";
-import { LogoutButton } from "./LogoutButton";
+import { Header } from "./Header";
 import { useDogsStore } from "../state/dogStore";
 
 export const Dashboard: React.FC = withAuth(() => {
@@ -66,7 +66,7 @@ export const Dashboard: React.FC = withAuth(() => {
 
   return (
     <>
-      <LogoutButton />
+      <Header />
       <Box
         sx={{
           maxWidth: 600,
