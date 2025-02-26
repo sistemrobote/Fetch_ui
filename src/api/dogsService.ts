@@ -32,11 +32,17 @@ export const dogsService = {
       throw axiosError;
     }
   },
-  searchDogs: async (params: SearchParams = {}): Promise<SearchResponse> => {
+  searchDogs: async (
+    params: SearchParams = {},
+    searchQuery?: string
+  ): Promise<SearchResponse> => {
     try {
-      const response = await apiClient.get<SearchResponse>("/dogs/search", {
-        params,
-      });
+      const response = await apiClient.get<SearchResponse>(
+        searchQuery ?? "/dogs/search",
+        {
+          params,
+        }
+      );
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;

@@ -4,7 +4,7 @@ import { LoginInputs } from "../models/user";
 import { apiLoginService } from "../api/userService";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../state/AuthContext";
 
 export const Login = () => {
   const {
@@ -55,7 +55,13 @@ export const Login = () => {
           Login
         </Typography>
         <TextField
-          {...register("email", { required: true })}
+          {...register("email", {
+            required: "Email is required",
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: "Invalid email address",
+            },
+          })}
           label="Email"
           fullWidth
           variant="outlined"
@@ -64,7 +70,7 @@ export const Login = () => {
           helperText={errors.email?.message}
         />
         <TextField
-          {...register("password", { required: true })}
+          {...register("password", { required: "Password is required" })}
           sx={{ mb: 2 }}
           label="Password"
           fullWidth

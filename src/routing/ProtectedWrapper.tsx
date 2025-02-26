@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../state/AuthContext";
 
 export const withAuth = (Component: React.FC) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

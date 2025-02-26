@@ -3,6 +3,7 @@ import { dogsService } from "../api/dogsService";
 import { Dog } from "../models/dogs";
 import { DogCard } from "./DogCard";
 import { Box, Button, Typography } from "@mui/material";
+import { useDogsStore } from "../state/dogStore";
 
 type Props = {
   ids: string[];
@@ -18,6 +19,7 @@ export const ResultsComponent = (props: Props) => {
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [matchedDogId, setMatchedDogId] = useState<string | null>(null);
+  const { results, setResults } = useDogsStore();
 
   useEffect(() => {
     if (!loadingData && ids.length)
@@ -44,13 +46,31 @@ export const ResultsComponent = (props: Props) => {
   };
 
   const isFavorite = (id: string) => favorites.includes(id);
+  const handleNextClick = async () => {
+    setPage(page + 1);
+    try {
+      const response = await dogsService.searchDogs({}, results?.next);
+      setResults(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handlePreviousClick = async () => {
+    setPage(page - 1);
+    try {
+      const response = await dogsService.searchDogs({}, results?.prev);
+      setResults(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
         <Button
           variant="outlined"
-          onClick={() => setPage(page - 1)}
+          onClick={handlePreviousClick}
           disabled={page === 0} // Disable if first page
         >
           Previous
@@ -60,7 +80,7 @@ export const ResultsComponent = (props: Props) => {
         </Typography>
         <Button
           variant="outlined"
-          onClick={() => setPage(page + 1)}
+          onClick={handleNextClick}
           disabled={page >= Math.ceil(totalResults / size) - 1} // Disable if last page
         >
           Next
