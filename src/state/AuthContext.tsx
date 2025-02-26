@@ -19,16 +19,16 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(() => {
-    const storedAuth = sessionStorage.getItem("isAuthorized");
-    const expiration = sessionStorage.getItem("authExpiration");
+    const storedAuth = localStorage.getItem("isAuthorized"); // SessinStorage is not working on some mobile browsers and incognito mode
+    const expiration = localStorage.getItem("authExpiration");
 
     if (storedAuth === "true" && expiration) {
       const now = new Date().getTime();
       if (now < parseInt(expiration, 10)) {
         return true;
       } else {
-        sessionStorage.removeItem("isAuthorized");
-        sessionStorage.removeItem("authExpiration");
+        localStorage.removeItem("isAuthorized");
+        localStorage.removeItem("authExpiration");
       }
     }
     return false;
@@ -37,11 +37,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     if (isAuthorized) {
       const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1 hour from now
-      sessionStorage.setItem("isAuthorized", "true");
-      sessionStorage.setItem("authExpiration", expirationTime.toString());
+      localStorage.setItem("isAuthorized", "true");
+      localStorage.setItem("authExpiration", expirationTime.toString());
     } else {
-      sessionStorage.removeItem("isAuthorized");
-      sessionStorage.removeItem("authExpiration");
+      localStorage.removeItem("isAuthorized");
+      localStorage.removeItem("authExpiration");
     }
   }, [isAuthorized]);
 
