@@ -10,32 +10,42 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import { Dog } from "../models/dogs";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect } from "react";
 
 type Props = {
   dog: Dog;
+  favorites?: string[];
+  setFavorites?: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-export const DogCard = ({ dog }: Props) => {
+export const DogCard = ({ dog, favorites, setFavorites }: Props) => {
   const theme = useTheme();
-  const [favorites, setFavorites] = useState(() => {
+
+  useEffect(() => {
     const storedFavorites = localStorage.getItem("favorites");
-    return storedFavorites ? JSON.parse(storedFavorites) : [];
-  });
-  const isFavorit = favorites.includes(dog.id);
+    if (storedFavorites) setFavorites?.(JSON.parse(storedFavorites));
+  }, [setFavorites]);
+
+  const isFavorit = favorites?.includes(dog.id);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const handleClick = useCallback(() => {
-    setFavorites((prevFavorites: string[]) => {
+    setFavorites?.((prevFavorites) => {
       let updatedFavorites;
       if (prevFavorites.includes(dog.id)) {
-        updatedFavorites = prevFavorites.filter((id) => id !== dog.id); // Remove from favorites
+        updatedFavorites = prevFavorites.filter((id) => id !== dog.id); // Remove favorite
       } else {
-        updatedFavorites = [...prevFavorites, dog.id]; // Add to favorites
+        updatedFavorites = [...prevFavorites, dog.id]; // Add favorite
       }
-      localStorage.setItem("favorites", JSON.stringify(updatedFavorites)); // Store in localStorage
+
+      try {
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites)); // Update localStorage
+      } catch (error) {
+        console.error("Error saving to localStorage:", error);
+      }
+
       return updatedFavorites;
     });
-  }, [dog.id]);
+  }, [dog.id, setFavorites]);
 
   return (
     <Card

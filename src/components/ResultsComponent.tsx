@@ -18,6 +18,7 @@ export const ResultsComponent = (props: Props) => {
   const { loadingData, ids, page, setPage, totalResults, size } = props;
   const [dogs, setDogs] = useState<Dog[]>([]);
   const { results, setResults } = useDogsStore();
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
     if (!loadingData && ids.length)
@@ -70,7 +71,12 @@ export const ResultsComponent = (props: Props) => {
         </Button>
       </Box>
       {dogs.map((dog) => (
-        <DogCard key={dog.id} dog={dog} />
+        <DogCard
+          key={dog.id}
+          dog={dog}
+          favorites={favorites}
+          setFavorites={setFavorites}
+        />
       ))}
     </>
   );

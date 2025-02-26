@@ -13,7 +13,6 @@ import { MyFavorites } from "../components/MyFavorites";
 
 function ProtectedRoute() {
   const { isAuthorized } = useAuth();
-  console.log(" ProtectedRoute isAuthorized::>>>", isAuthorized);
   return isAuthorized ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
