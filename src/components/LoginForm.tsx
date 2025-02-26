@@ -1,32 +1,37 @@
-// import  { useState } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useForm, SubmitHandler } from "react-hook-form";
-
-type Inputs = {
-  email: string;
-  password: string;
-};
+import { LoginInputs } from "../models/user";
+import { apiLoginService } from "../api/userService";
+import { useState } from "react";
+import { ApiError } from "../models/api";
 
 export const LoginForm = () => {
-  //   const { register, handleSubmit, formState: { errors } } = useForm();
-  //   const [loading, setLoading] = useState(false);
-
-  //   const onSubmit = (data) => {
-  //     console.log(" onSubmit data::>>>", data)
-  //     setLoading(true);
-  //     setTimeout(() => {
-  //       console.log("Login Data:", data);
-  //       setLoading(false);
-  //     }, 2000);
-  //   };
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
-  console.log(watch("email")); // watch input value by passing the name of it
+  } = useForm<LoginInputs>();
+  const [unathorizedError, setUnathorizedError] = useState("");
+  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
+    console.log(data);
+    try {
+      await apiLoginService.login("John Doe", "john@example.com");
+      console.log("Login successful!");
+    } catch (error) {
+      if (error && typeof error === "object" && "errorCode" in error) {
+        if (error.errorCode === "401") {
+          setUnathorizedError("Unauthorized: Incorrect credentials.");
+        } else {
+          const err = error as ApiError;
+          console.error(`Error logging in: ${err.message}`);
+        }
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
+  };
+  console.log(watch("email"));
 
   return (
     <Box
@@ -47,25 +52,28 @@ export const LoginForm = () => {
         </Typography>
         <TextField
           {...register("email", { required: true })}
-          error={!!errors.email}
           label="Email"
           fullWidth
           variant="outlined"
           margin="normal"
+          error={!!errors.email}
+          helperText={errors.email?.message}
         />
         <TextField
           {...register("password", { required: true })}
-          error={!!errors.password}
           sx={{ mb: 2 }}
           label="Password"
           fullWidth
           variant="outlined"
           margin="normal"
+          error={!!errors.password}
+          helperText={errors.password?.message}
         />
-        <Button type="submit" variant="outlined">
+        <Button sx={{ mb: 2 }} type="submit" variant="outlined">
           Submit
         </Button>
       </form>
+      {unathorizedError && <Alert severity="error">{unathorizedError}</Alert>}
     </Box>
   );
 };
