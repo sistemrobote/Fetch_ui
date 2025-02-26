@@ -28,10 +28,10 @@ export const MyFavorites = () => {
 
     try {
       const responseId = await dogsService.matchDog(favoritesIds);
-
       // Fetch the matched dog's full details
       const matchedDogDetails = await dogsService.fetchDogsByIds([responseId]);
       setMatchedDog(matchedDogDetails[0]);
+      localStorage.setItem("favorites", "");
     } catch (error) {
       console.error("Error matching dog:", error);
     }
@@ -58,7 +58,7 @@ export const MyFavorites = () => {
       <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
         My Favorite Dogs
       </Typography>
-      {!matchedDog && (
+      {!matchedDog && !!favoritesIds.length && (
         <Button
           variant="contained"
           color="primary"

@@ -40,6 +40,7 @@ export interface InputData {
   ageMax?: string;
   size?: string;
   from?: string;
+  sort?: string;
 }
 export interface Match {
   match: string;

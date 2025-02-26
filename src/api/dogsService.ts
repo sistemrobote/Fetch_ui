@@ -9,6 +9,7 @@ interface SearchParams {
   ageMax?: string;
   size?: string;
   from?: string;
+  sort?: string;
 }
 
 interface SearchResponse {

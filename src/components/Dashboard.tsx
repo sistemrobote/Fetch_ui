@@ -6,6 +6,9 @@ import {
   FormControl,
   Typography,
   Autocomplete,
+  Select,
+  MenuItem,
+  Stack,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { dogsService } from "../api/dogsService";
@@ -17,7 +20,7 @@ import { Header } from "./Header";
 import { useDogsStore } from "../state/dogStore";
 
 export const Dashboard: React.FC = withAuth(() => {
-  const { control, handleSubmit, watch } = useForm<InputData>({
+  const { control, handleSubmit, watch, setValue } = useForm<InputData>({
     defaultValues: {
       breeds: [],
       zipCodes: "",
@@ -25,6 +28,7 @@ export const Dashboard: React.FC = withAuth(() => {
       ageMax: "20",
       size: "25",
       from: "0",
+      sort: "",
     },
   });
 
@@ -54,6 +58,7 @@ export const Dashboard: React.FC = withAuth(() => {
         ...parsedData,
         size: data.size,
         from: data.from,
+        sort: data.sort || undefined, // Send sort param if selected
       });
       setResults(response);
     } catch (error) {
@@ -144,18 +149,44 @@ export const Dashboard: React.FC = withAuth(() => {
               />
             )}
           />
-          <Controller
-            name="size"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Results per Page"
-                type="number"
-                sx={{ mb: 2, maxWidth: "120px" }}
+          <Stack direction="row" spacing={4}>
+            <Controller
+              name="size"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Results per Page"
+                  type="number"
+                  sx={{ mb: 2, maxWidth: "120px" }}
+                />
+              )}
+            />
+
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="sort"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label={"Sort by"}
+                    onChange={(e) => setValue("sort", e.target.value)}
+                    displayEmpty
+                    sx={{ mb: 2, maxWidth: "120px" }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="breed:asc">Breed (A-Z)</MenuItem>
+                    <MenuItem value="breed:desc">Breed (Z-A)</MenuItem>
+                    <MenuItem value="name:asc">Name (A-Z)</MenuItem>
+                    <MenuItem value="name:desc">Name (Z-A)</MenuItem>
+                    <MenuItem value="age:asc">Age (Youngest First)</MenuItem>
+                    <MenuItem value="age:desc">Age (Oldest First)</MenuItem>
+                  </Select>
+                )}
               />
-            )}
-          />
+            </FormControl>
+          </Stack>
 
           <Button
             type="submit"
