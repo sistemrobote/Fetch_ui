@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   Stack,
+  Paper,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { dogsService } from "../api/dogsService";
@@ -54,12 +55,13 @@ export const Dashboard: React.FC = withAuth(() => {
     setLoading(true);
     const parsedData = transformData(data);
     try {
-      const response = await dogsService.searchDogs({
+      const requestData = {
         ...parsedData,
         size: data.size,
         from: data.from,
         sort: data.sort || undefined, // Send sort param if selected
-      });
+      };
+      const response = await dogsService.searchDogs(requestData);
       setResults(response);
     } catch (error) {
       console.error("Error searching dogs:", error);
@@ -74,145 +76,160 @@ export const Dashboard: React.FC = withAuth(() => {
       <Header />
       <Box
         sx={{
-          maxWidth: 600,
-          mx: "auto",
-          mt: 6,
-          p: 4,
-          boxShadow: 3,
-          borderRadius: 2,
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f4f6f8",
+          padding: 2,
         }}
       >
-        <Typography variant="h5" sx={{ mb: 3, textAlign: "center" }}>
-          Search for Dogs
-        </Typography>
+        <Paper
+          elevation={6}
+          sx={{
+            maxWidth: 600,
+            p: 4,
+            borderRadius: 3,
+            boxShadow: 3,
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            color="gray"
+            sx={{ mb: 3 }}
+          >
+            Search for Dogs
+          </Typography>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl fullWidth sx={{ mb: 2 }}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="breeds"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Autocomplete
+                    multiple
+                    options={breeds}
+                    value={value || []}
+                    onChange={(_, newValue) => onChange(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        placeholder="Favorite Breeds"
+                      />
+                    )}
+                  />
+                )}
+              />
+            </FormControl>
+
             <Controller
-              name="breeds"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <Autocomplete
-                  multiple
-                  options={breeds}
-                  value={value || []}
-                  onChange={(_, newValue) => onChange(newValue)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      placeholder="Favorite Breeds"
-                    />
-                  )}
-                />
-              )}
-            />
-          </FormControl>
-
-          <Controller
-            name="zipCodes"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Zip Codes (comma separated)"
-                fullWidth
-                sx={{ mb: 2 }}
-              />
-            )}
-          />
-
-          <Controller
-            name="ageMin"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                defaultValue={field.value}
-                label="Minimum age"
-                fullWidth
-                sx={{ mb: 2 }}
-              />
-            )}
-          />
-
-          <Controller
-            name="ageMax"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                defaultValue={field.value}
-                label="Maximum age"
-                fullWidth
-                sx={{ mb: 2 }}
-              />
-            )}
-          />
-          <Stack direction="row" spacing={4}>
-            <Controller
-              name="size"
+              name="zipCodes"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Results per Page"
-                  type="number"
-                  sx={{ mb: 2, maxWidth: "120px" }}
+                  label="Zip Codes (comma separated)"
+                  fullWidth
+                  sx={{ mb: 2 }}
                 />
               )}
             />
 
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <Controller
+              name="ageMin"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  defaultValue={field.value}
+                  label="Minimum age"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
+
+            <Controller
+              name="ageMax"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  defaultValue={field.value}
+                  label="Maximum age"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
+            <Stack direction="row" spacing={4}>
               <Controller
-                name="sort"
+                name="size"
                 control={control}
                 render={({ field }) => (
-                  <Select
+                  <TextField
                     {...field}
-                    label={"Sort by"}
-                    onChange={(e) => setValue("sort", e.target.value)}
-                    displayEmpty
+                    label="Results per Page"
+                    type="number"
                     sx={{ mb: 2, maxWidth: "120px" }}
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    <MenuItem value="breed:asc">Breed (A-Z)</MenuItem>
-                    <MenuItem value="breed:desc">Breed (Z-A)</MenuItem>
-                    <MenuItem value="name:asc">Name (A-Z)</MenuItem>
-                    <MenuItem value="name:desc">Name (Z-A)</MenuItem>
-                    <MenuItem value="age:asc">Age (Youngest First)</MenuItem>
-                    <MenuItem value="age:desc">Age (Oldest First)</MenuItem>
-                  </Select>
+                  />
                 )}
               />
-            </FormControl>
-          </Stack>
 
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{
-              mb: 2,
-              backgroundColor: "#4CAF50",
-              "&:hover": { backgroundColor: "#45a049" },
-            }}
-          >
-            Search Dogs
-          </Button>
-        </form>
-        {results?.resultIds.length === 0 && !loading ? (
-          <Typography>No results matched, try update filters</Typography>
-        ) : (
-          <ResultsComponent
-            ids={results?.resultIds ?? []}
-            loadingData={loading}
-            page={page}
-            setPage={setPage}
-            totalResults={results?.total ?? 0}
-            size={parseInt(selectedSize || "25")}
-          />
-        )}
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <Controller
+                  name="sort"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label={"Sort by"}
+                      onChange={(e) => setValue("sort", e.target.value)}
+                      displayEmpty
+                      sx={{ mb: 2, maxWidth: "120px" }}
+                    >
+                      <MenuItem value="">None</MenuItem>
+                      <MenuItem value="breed:asc">Breed (A-Z)</MenuItem>
+                      <MenuItem value="breed:desc">Breed (Z-A)</MenuItem>
+                      <MenuItem value="name:asc">Name (A-Z)</MenuItem>
+                      <MenuItem value="name:desc">Name (Z-A)</MenuItem>
+                      <MenuItem value="age:asc">Age (Youngest First)</MenuItem>
+                      <MenuItem value="age:desc">Age (Oldest First)</MenuItem>
+                    </Select>
+                  )}
+                />
+              </FormControl>
+            </Stack>
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                backgroundColor: "#4CAF50",
+                "&:hover": { backgroundColor: "#388E3C" },
+              }}
+            >
+              Search Dogs
+            </Button>
+          </form>
+          {results?.resultIds.length === 0 && !loading ? (
+            <Typography>No results matched, try update filters</Typography>
+          ) : (
+            <ResultsComponent
+              ids={results?.resultIds ?? []}
+              loadingData={loading}
+              page={page}
+              setPage={setPage}
+              totalResults={results?.total ?? 0}
+              size={parseInt(selectedSize || "25")}
+            />
+          )}
+        </Paper>
       </Box>
     </>
   );

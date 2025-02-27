@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Box, Button, CardMedia, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CardMedia,
+  IconButton,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { dogsService } from "../api/dogsService";
 import { Dog } from "../models/dogs";
 import { DogCard } from "../components/DogCard";
@@ -51,47 +58,71 @@ export const MyFavorites = () => {
     [navigate]
   );
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 5, p: 3 }}>
-      <IconButton onClick={handleBackButtonClick} sx={{ mb: 2 }}>
-        <ArrowBackIcon fontSize="large" />
-      </IconButton>
-      <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
-        My Favorite Dogs
-      </Typography>
-      {!matchedDog && !!favoritesIds.length && (
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 3, mb: 3 }}
-          onClick={handleMatch}
-        >
-          Find My Match
-        </Button>
-      )}
-
-      {matchedDog ? (
-        <>
-          <Typography
-            sx={{ paddingBottom: 4, width: "100%", textAlign: "center" }}
-          >
-            CONGRATULATIONS!!! Your match is lovely {matchedDog.name}
-          </Typography>
-          <CardMedia
-            component="img"
-            image={matchedDog.img}
-            alt={matchedDog.name}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f4f6f8",
+        padding: 2,
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          maxWidth: 800,
+          p: 4,
+          borderRadius: 3,
+          boxShadow: 3,
+          textAlign: "center",
+        }}
+      >
+        <IconButton onClick={handleBackButtonClick} sx={{ mb: 2 }}>
+          <ArrowBackIcon fontSize="large" />
+        </IconButton>
+        <Typography variant="h4" fontWeight="bold" color="grey" sx={{ mb: 3 }}>
+          My Favorite Dogs
+        </Typography>
+        {!matchedDog && !!favoritesIds.length && (
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
             sx={{
-              objectFit: "cover",
-              borderRadius: "8px 0 0 8px",
+              mt: 3,
+              backgroundColor: "#4CAF50",
+              "&:hover": { backgroundColor: "#388E3C" },
             }}
-          />
-        </>
-      ) : favoriteDogs.length === 0 ? (
-        <Typography textAlign="center">No favorite dogs yet.</Typography>
-      ) : (
-        favoriteDogs.map((dog) => <DogCard key={dog.id} dog={dog} />)
-      )}
+            onClick={handleMatch}
+          >
+            Find My Match
+          </Button>
+        )}
+
+        {matchedDog ? (
+          <>
+            <Typography
+              sx={{ paddingBottom: 4, width: "100%", textAlign: "center" }}
+            >
+              CONGRATULATIONS!!! Your match is lovely {matchedDog.name}
+            </Typography>
+            <CardMedia
+              component="img"
+              image={matchedDog.img}
+              alt={matchedDog.name}
+              sx={{
+                objectFit: "cover",
+                borderRadius: "8px 0 0 8px",
+              }}
+            />
+          </>
+        ) : favoriteDogs.length === 0 ? (
+          <Typography textAlign="center">No favorite dogs yet.</Typography>
+        ) : (
+          favoriteDogs.map((dog) => <DogCard key={dog.id} dog={dog} />)
+        )}
+      </Paper>
     </Box>
   );
 };

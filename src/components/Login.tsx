@@ -43,18 +43,15 @@ export const Login = () => {
   return (
     <Box
       sx={{
-        width: 320,
-        p: 3,
-        boxShadow: 3,
-        borderRadius: 2,
-        textAlign: "center",
-        bgcolor: "background.paper",
-        mx: "auto",
-        mt: 5,
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f4f6f8",
       }}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
+        <Typography variant="h5" fontWeight="bold" color="grey" sx={{ mb: 2 }}>
           Login
         </Typography>
         <TextField
@@ -76,13 +73,14 @@ export const Login = () => {
           {...register("password", { required: "Password is required" })}
           sx={{ mb: 2 }}
           label="Password"
+          type="password"
           fullWidth
           variant="outlined"
           margin="normal"
           error={!!errors.password}
           helperText={errors.password?.message}
         />
-        <Button sx={{ mb: 2 }} type="submit" variant="outlined">
+        <Button sx={{ mb: 2, color: "grey" }} type="submit" variant="outlined">
           Submit
         </Button>
       </form>
