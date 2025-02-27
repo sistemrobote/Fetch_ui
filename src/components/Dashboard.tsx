@@ -24,7 +24,7 @@ export const Dashboard: React.FC = withAuth(() => {
   const { control, handleSubmit, watch, setValue } = useForm<InputData>({
     defaultValues: {
       breeds: [],
-      zipCodes: "",
+      zipCodes: "", // TODO: check with API why zipCodes filter isn't working
       ageMin: "0",
       ageMax: "20",
       size: "25",
@@ -55,13 +55,7 @@ export const Dashboard: React.FC = withAuth(() => {
     setLoading(true);
     const parsedData = transformData(data);
     try {
-      const requestData = {
-        ...parsedData,
-        size: data.size,
-        from: data.from,
-        sort: data.sort || undefined, // Send sort param if selected
-      };
-      const response = await dogsService.searchDogs(requestData);
+      const response = await dogsService.searchDogs(parsedData);
       setResults(response);
     } catch (error) {
       console.error("Error searching dogs:", error);
